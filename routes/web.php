@@ -43,14 +43,14 @@ Route::resource('usuarios', 'UsersController');
 //    'password' => bcrypt('123'),
 //
 //]);
-
+//
 //\App\User::create([
 //   'name' => 'Estudiante',
 //   'email' => 'estu@ache.com',
 //    'password' => bcrypt('123'),
 //
 //]);
-
+//
 //\App\Role::create([
 //   'clave' => 'admin',
 //   'nombre' => 'Administr',
@@ -70,9 +70,9 @@ Route::resource('usuarios', 'UsersController');
 //
 //]);
 
-//Route::get('roles', function (){
-//   return \App\Role::with('user')->get();
-//});
+Route::get('roles', function (){
+   return \App\Role::with('user')->get();
+});
 
 //Login
 //Route::get('login', 'Auth\LoginController@showLoginForm');

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Role;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -40,44 +42,27 @@ class UsersController extends Controller
      */
     public function create()
     {
+        $roles = Role::pluck('nombre', 'id');
 
 
-        //
-        return view('mensajes.create');
+        return view('usuarios.create', compact('roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\RegisterUserRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(RegisterUserRequest $request)
     {
-        //Guardar el mensaje
-//        DB::table('mensajes')->insert([
-//            "nombre" => $request->input('nombre'),
-//            "email" => $request->input('email'),
-//            "mensaje" => $request->input('mensaje'),
-//            "created_at" => Carbon::now(),
-//            "updated_at" => Carbon::now(),
-//        ]);
 
-        $this->validate($request, [
-            'nombre' => 'required',
-            'email' => 'email|required',
-            'mensaje' => 'required|min:5'
-        ]);
-        //Guardar con ELOQUENT
-        $mensaje = new Mensaje;
-        $mensaje->nombre = $request->input('nombre');
-        $mensaje->email = $request->input('email');
-        $mensaje->mensaje = $request->input('mensaje');
-        $mensaje->save();
+        $user = User::create($request->all());
 
-//        Mensaje::created($request->all()); eliminar la linea de toquen y establecer los campos a guardar en el modelo con protect fillable y un array con los campos
-        //redireccionar
-        return redirect()->route('mensajes.index');
+
+        $user->roles()->attach($request->roles);
+
+        return redirect()->route('usuarios.index');
     }
 
     /**
@@ -109,7 +94,9 @@ class UsersController extends Controller
 
         $this->authorize('edit', $user); //pasar el metodo que creemos en el UserPolicy junto con el usuarios autenticado
 
-        return view('usuarios.edit', compact('user'));
+        $roles = Role::pluck('nombre', 'id');
+
+        return view('usuarios.edit', compact('user', 'roles'));
     }
 
     /**
@@ -126,7 +113,8 @@ class UsersController extends Controller
 
         $this->authorize('update', $user); //pasar el metodo que creemos en el UserPolicy junto con el usuarios autenticado
 
-        $user->update($request->all());
+        $user->update($request->only('name', 'email'));
+        $user->roles()->sync($request->roles); //sync para evitar duplicaciones
 
         return back()->with('info', 'Usuario actualizado');
     }
@@ -144,6 +132,8 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
         $this->authorize('destroy', $user); //pasar el metodo que creemos en el UserPolicy junto con el usuarios autenticado
+        $user->roles()->detach();
+
         $user->delete();
 
         return back()->with('info', 'Usuario eliminado');

@@ -1,12 +1,14 @@
 @extends('layout')
 @section('contenido')
    <h1>USUARIOS</h1>
-    <table class="table">
+   <a name="" id="" class="btn btn-primary float-right" href="{{ route('usuarios.create') }}" role="button">Crear Usuario</a>
+   <table class="table">
         <thead>
         <tr>
             <th>Nombre</th>
             <th>Email</th>
             <th>Rol</th>
+            <th>Notas</th>
             <th>Acciones</th>
         </tr>
         </thead>
@@ -26,6 +28,7 @@
                     {{--@endforeach--}}
                     {{ $user->roles->pluck('nombre')->implode(', ') }}
                 </td>
+                <td> {{ optional( $user->note )->body }}</td>
                 <td>
                     <a href="{{ route('usuarios.edit', $user->id) }}" class="btn btn-warning btn-sm">Editar</a>
                     <form action="{{ route('usuarios.destroy', $user->id) }}" method="POST" style="display: inline;">

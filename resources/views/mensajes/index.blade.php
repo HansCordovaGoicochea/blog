@@ -8,6 +8,7 @@
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Mensaje</th>
+                <th>Notas</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
                     <td>{{ $mensaje->email }}</td>
                 @endif
                 <td>   <a href="{{ route('mensajes.show', $mensaje->id) }}">{{ $mensaje->mensaje }}</a></td>
+                <td> {{ optional( $mensaje->note )->body }}</td>
                 <td>
                     <a href="{{ route('mensajes.edit', $mensaje->id) }}" class="btn btn-warning btn-sm">Editar</a>
                     <form action="{{ route('mensajes.destroy', $mensaje->id) }}" method="POST" style="display: inline;">
